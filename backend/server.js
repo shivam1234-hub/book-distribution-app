@@ -18,6 +18,11 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 
+// Root route
+app.get('/', (req, res) => {
+  res.json({ message: 'Book Distribution API is running!', endpoints: ['/api/books', '/api/centers', '/api/users'] });
+});
+
 // Test route
 app.get('/api/test', (req, res) => {
   res.json({ message: 'Server is running!' });
