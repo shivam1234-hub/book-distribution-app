@@ -4,7 +4,7 @@ import './App.css';
 import HomePage from './components/HomePage';
 import Dashboard from './components/Dashboard';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8083/api';
+const API_URL = process.env.REACT_APP_API_URL || 'https://book-distribution-app.onrender.com/api';
 
 function App() {
   const [selectedCenter, setSelectedCenter] = useState(null);
