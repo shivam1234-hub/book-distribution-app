@@ -1,0 +1,26 @@
+# Optional: GitHub Actions for auto-deployment
+# This is optional - you can deploy directly from Render and Vercel dashboards
+
+name: Deploy
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+      - name: Install dependencies
+        run: |
+          cd backend && npm install
+          cd ../frontend && npm install
+      - name: Build frontend
+        run: |
+          cd frontend && npm run build
+

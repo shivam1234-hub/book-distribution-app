@@ -1,0 +1,182 @@
+.add-distribution {
+  max-width: 600px;
+}
+
+.add-distribution h2 {
+  color: #333;
+  margin-bottom: 30px;
+  font-size: 1.8rem;
+}
+
+.book-selector-section {
+  margin-bottom: 30px;
+}
+
+.book-selector-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.book-selector-header label {
+  font-weight: 600;
+  color: #333;
+}
+
+.btn-add-book {
+  padding: 8px 16px;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.btn-add-book:hover {
+  background: #218838;
+}
+
+.add-book-form {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  border: 2px solid #e0e0e0;
+}
+
+.add-book-form form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.add-book-form .form-input {
+  width: 100%;
+}
+
+.add-book-form .btn-primary {
+  padding: 12px 20px;
+  white-space: nowrap;
+}
+
+.distribution-form {
+  background: #f8f9fa;
+  padding: 30px;
+  border-radius: 12px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #333;
+}
+
+.form-select,
+.form-input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: border-color 0.3s;
+}
+
+.form-select:focus,
+.form-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.book-info {
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border: 2px solid #e0e0e0;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.info-item:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  color: #666;
+  font-weight: 500;
+}
+
+.info-value {
+  color: #333;
+  font-weight: 600;
+}
+
+.calculation-preview {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border: 2px solid #e0e0e0;
+}
+
+.calc-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  font-size: 1.1rem;
+}
+
+.calc-item.donation {
+  color: #28a745;
+}
+
+.calc-item.loss {
+  color: #dc3545;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 15px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.submit-btn:hover:not(:disabled) {
+  background: #5568d3;
+}
+
+.submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .add-distribution {
+    max-width: 100%;
+  }
+
+  .distribution-form {
+    padding: 20px;
+  }
+}
+

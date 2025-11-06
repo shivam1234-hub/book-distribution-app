@@ -1,0 +1,125 @@
+.dashboard {
+  min-height: 100vh;
+  background: white;
+}
+
+.dashboard-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.back-btn {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.header-info h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.header-info p {
+  margin: 5px 0 0 0;
+  opacity: 0.9;
+  font-size: 0.9rem;
+}
+
+.dashboard-content {
+  display: flex;
+  min-height: calc(100vh - 100px);
+}
+
+.sidebar {
+  width: 250px;
+  background: #f8f9fa;
+  border-right: 2px solid #e0e0e0;
+  padding: 20px 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-tab {
+  padding: 15px 20px;
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  color: #666;
+  transition: all 0.3s;
+  border-left: 4px solid transparent;
+}
+
+.sidebar-tab:hover {
+  background: #e9ecef;
+  color: #667eea;
+}
+
+.sidebar-tab.active {
+  background: white;
+  color: #667eea;
+  border-left-color: #667eea;
+  font-weight: 600;
+}
+
+.main-content {
+  flex: 1;
+  padding: 30px;
+  overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .dashboard-content {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 2px solid #e0e0e0;
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 0;
+  }
+
+  .sidebar-tab {
+    white-space: nowrap;
+    border-left: none;
+    border-bottom: 4px solid transparent;
+    padding: 15px;
+  }
+
+  .sidebar-tab.active {
+    border-left: none;
+    border-bottom-color: #667eea;
+  }
+
+  .main-content {
+    padding: 20px;
+  }
+}
+
