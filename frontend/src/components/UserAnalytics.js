@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import './UserAnalytics.css';
 
-const UserAnalytics = ({ user, apiUrl }) => {
+const UserAnalytics = ({ user }) => {
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -12,7 +12,7 @@ const UserAnalytics = ({ user, apiUrl }) => {
 
   const fetchAnalytics = async () => {
     try {
-      const response = await axios.get(`${apiUrl}/users/${user._id}/analytics`);
+      const response = await api.get(`/users/${user._id}/analytics`);
       setAnalytics(response.data);
     } catch (error) {
       console.error('Error fetching analytics:', error);

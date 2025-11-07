@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import './AddDistribution.css';
 
-const AddDistribution = ({ user, books, apiUrl, onDistributionAdded, onBookAdded }) => {
+const AddDistribution = ({ user, books, onDistributionAdded, onBookAdded }) => {
   const [selectedBook, setSelectedBook] = useState('');
   const [pricePaid, setPricePaid] = useState('');
   const [loading, setLoading] = useState(false);
@@ -27,7 +27,7 @@ const AddDistribution = ({ user, books, apiUrl, onDistributionAdded, onBookAdded
 
     setLoading(true);
     try {
-      await axios.post(`${apiUrl}/users/${user._id}/distribution`, {
+      await api.post(`/users/${user._id}/distribution`, {
         bookId: selectedBook,
         pricePaid: price
       });
@@ -60,7 +60,7 @@ const AddDistribution = ({ user, books, apiUrl, onDistributionAdded, onBookAdded
     }
 
     try {
-      await axios.post(`${apiUrl}/books`, {
+      await api.post('/books', {
         name: newBookName.trim(),
         point: point,
         price: price

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import './CenterAnalytics.css';
 
-const CenterAnalytics = ({ center, apiUrl }) => {
+const CenterAnalytics = ({ center }) => {
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -12,7 +12,7 @@ const CenterAnalytics = ({ center, apiUrl }) => {
 
   const fetchAnalytics = async () => {
     try {
-      const response = await axios.get(`${apiUrl}/centers/${center._id}/analytics`);
+      const response = await api.get(`/centers/${center._id}/analytics`);
       setAnalytics(response.data);
     } catch (error) {
       console.error('Error fetching center analytics:', error);

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import './HomePage.css';
 
-const HomePage = ({ centers, onCenterSelect, onUserSelect, selectedCenter, apiUrl, onCenterAdded }) => {
+const HomePage = ({ centers, onCenterSelect, onUserSelect, selectedCenter, onCenterAdded }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -25,7 +25,7 @@ const HomePage = ({ centers, onCenterSelect, onUserSelect, selectedCenter, apiUr
     
     setLoading(true);
     try {
-      const response = await axios.get(`${apiUrl}/users/search`, {
+      const response = await api.get('/users/search', {
         params: {
           centerId: selectedCenter._id,
           query: searchQuery
@@ -47,7 +47,7 @@ const HomePage = ({ centers, onCenterSelect, onUserSelect, selectedCenter, apiUr
     }
 
     try {
-      const response = await axios.post(`${apiUrl}/users`, {
+      const response = await api.post('/users', {
         name: newUserName.trim(),
         number: newUserNumber.trim(),
         centerId: selectedCenter._id
@@ -75,7 +75,7 @@ const HomePage = ({ centers, onCenterSelect, onUserSelect, selectedCenter, apiUr
     }
 
     try {
-      await axios.post(`${apiUrl}/centers`, {
+      await api.post('/centers', {
         name: newCenterName.trim()
       });
       setNewCenterName('');

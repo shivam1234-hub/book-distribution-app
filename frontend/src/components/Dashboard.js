@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import './Dashboard.css';
 import AddDistribution from './AddDistribution';
 import UserAnalytics from './UserAnalytics';
 import CenterAnalytics from './CenterAnalytics';
 
-const Dashboard = ({ user, center, onBack, apiUrl }) => {
+const Dashboard = ({ user, center, onBack }) => {
   const [activeTab, setActiveTab] = useState('add');
   const [books, setBooks] = useState([]);
   const [userData, setUserData] = useState(user);
@@ -20,7 +20,7 @@ const Dashboard = ({ user, center, onBack, apiUrl }) => {
 
   const fetchBooks = async () => {
     try {
-      const response = await axios.get(`${apiUrl}/books`);
+      const response = await api.get('/books');
       setBooks(response.data);
     } catch (error) {
       console.error('Error fetching books:', error);
@@ -29,7 +29,7 @@ const Dashboard = ({ user, center, onBack, apiUrl }) => {
 
   const fetchUserData = async () => {
     try {
-      const response = await axios.get(`${apiUrl}/users/${user._id}`);
+      const response = await api.get(`/users/${user._id}`);
       setUserData(response.data);
     } catch (error) {
       console.error('Error fetching user data:', error);
@@ -38,7 +38,7 @@ const Dashboard = ({ user, center, onBack, apiUrl }) => {
 
   const fetchCenterData = async () => {
     try {
-      const response = await axios.get(`${apiUrl}/centers/${center._id}`);
+      const response = await api.get(`/centers/${center._id}`);
       setCenterData(response.data);
     } catch (error) {
       console.error('Error fetching center data:', error);
@@ -87,7 +87,6 @@ const Dashboard = ({ user, center, onBack, apiUrl }) => {
             <AddDistribution
               user={userData}
               books={books}
-              apiUrl={apiUrl}
               onDistributionAdded={handleDistributionAdded}
               onBookAdded={fetchBooks}
             />
@@ -95,13 +94,11 @@ const Dashboard = ({ user, center, onBack, apiUrl }) => {
           {activeTab === 'user' && (
             <UserAnalytics
               user={userData}
-              apiUrl={apiUrl}
             />
           )}
           {activeTab === 'center' && (
             <CenterAnalytics
               center={centerData}
-              apiUrl={apiUrl}
             />
           )}
         </div>
