@@ -4,6 +4,7 @@ import './Dashboard.css';
 import AddDistribution from './AddDistribution';
 import UserAnalytics from './UserAnalytics';
 import CenterAnalytics from './CenterAnalytics';
+import DailyAnalytics from './DailyAnalytics';
 
 const Dashboard = ({ user, center, onBack }) => {
   const [activeTab, setActiveTab] = useState('add');
@@ -80,6 +81,12 @@ const Dashboard = ({ user, center, onBack }) => {
           >
             🏢 Center Analytics
           </button>
+          <button
+            className={`sidebar-tab ${activeTab === 'daily' ? 'active' : ''}`}
+            onClick={() => setActiveTab('daily')}
+          >
+            📅 Daily Activity
+          </button>
         </div>
 
         <div className="main-content">
@@ -98,6 +105,11 @@ const Dashboard = ({ user, center, onBack }) => {
           )}
           {activeTab === 'center' && (
             <CenterAnalytics
+              center={centerData}
+            />
+          )}
+          {activeTab === 'daily' && (
+            <DailyAnalytics
               center={centerData}
             />
           )}

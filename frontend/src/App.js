@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import api from './services/api';
 import './App.css';
 import HomePage from './components/HomePage';
 import Dashboard from './components/Dashboard';
+import Admin from './components/Admin';
 
-function App() {
+function AppContent() {
   const [selectedCenter, setSelectedCenter] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
   const [centers, setCenters] = useState([]);
+  const location = useLocation();
 
   useEffect(() => {
     fetchCenters();
@@ -36,6 +39,13 @@ function App() {
     setSelectedCenter(null);
   };
 
+  // Check if we're on admin route
+  const isAdminRoute = location.pathname === '/book-distribution-app/admin' || location.pathname === '/admin';
+
+  if (isAdminRoute) {
+    return <Admin />;
+  }
+
   if (selectedUser && selectedCenter) {
     return (
       <Dashboard
@@ -54,6 +64,14 @@ function App() {
       selectedCenter={selectedCenter}
       onCenterAdded={fetchCenters}
     />
+  );
+}
+
+function App() {
+  return (
+    <Router basename={process.env.PUBLIC_URL || '/book-distribution-app'}>
+      <AppContent />
+    </Router>
   );
 }
 

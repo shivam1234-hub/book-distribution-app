@@ -1,10 +1,23 @@
 import axios from 'axios';
 
-// Backend URLs - both will be called in parallel
-const BACKEND_URLS = [
-  process.env.REACT_APP_API_URL_VERCEL || 'https://book-distribution-app.vercel.app/api',
-  process.env.REACT_APP_API_URL_RENDER || 'https://book-distribution-app.onrender.com/api'
-];
+// Determine if we're in development mode
+const isDevelopment = process.env.NODE_ENV === 'development';
+
+// Backend URLs configuration
+// For local development, use localhost. For production, use deployed backends.
+let BACKEND_URLS;
+
+if (isDevelopment) {
+  // Local development - use local backend
+  const localBackendUrl = process.env.REACT_APP_API_URL_LOCAL || 'http://localhost:8083/api';
+  BACKEND_URLS = [localBackendUrl];
+} else {
+  // Production - use deployed backends (both will be called in parallel)
+  BACKEND_URLS = [
+    process.env.REACT_APP_API_URL_VERCEL || 'https://book-distribution-app.vercel.app/api',
+    process.env.REACT_APP_API_URL_RENDER || 'https://book-distribution-app.onrender.com/api'
+  ];
+}
 
 /**
  * Makes parallel requests to both backends and returns the first successful response
