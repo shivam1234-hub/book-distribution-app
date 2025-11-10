@@ -2,6 +2,35 @@ import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 import './Admin.css';
 
+const BOOK_TYPES = [
+  { value: 'MB', label: 'MB - Mega Big' },
+  { value: 'B', label: 'B - Big' },
+  { value: 'M', label: 'M - Medium' },
+  { value: 'S', label: 'S - Small' },
+  { value: 'SB', label: 'SB - Srimad Bhagavatam' },
+  { value: 'CC', label: 'CC - Chaitanya Charita Mrita' }
+];
+
+const BOOK_TYPE_POINTS = {
+  'MB': 2,
+  'B': 1,
+  'M': 0.5,
+  'S': 0.25,
+  'SB': 72,
+  'CC': 36
+};
+
+const BOOK_LANGUAGES = [
+  { value: 'Hindi', label: 'Hindi' },
+  { value: 'English', label: 'English' },
+  { value: 'Telugu', label: 'Telugu' },
+  { value: 'Kannada', label: 'Kannada' },
+  { value: 'Tamil', label: 'Tamil' },
+  { value: 'Bengali', label: 'Bengali' },
+  { value: 'Oriya', label: 'Oriya' },
+  { value: 'Marathi', label: 'Marathi' }
+];
+
 const Admin = () => {
   const [activeTab, setActiveTab] = useState('books');
   const [books, setBooks] = useState([]);
@@ -9,7 +38,7 @@ const Admin = () => {
   const [loading, setLoading] = useState(true);
   const [editingBook, setEditingBook] = useState(null);
   const [editingCenter, setEditingCenter] = useState(null);
-  const [formData, setFormData] = useState({ name: '', price: '', point: '' });
+  const [formData, setFormData] = useState({ type: '', language: '', name: '', price: '', point: '' });
   const [centerFormData, setCenterFormData] = useState({ name: '' });
 
   useEffect(() => {
@@ -39,24 +68,37 @@ const Admin = () => {
 
   const handleEditBook = (book) => {
     setEditingBook(book._id);
+    const bookType = book.type || '';
+    const points = bookType && BOOK_TYPE_POINTS[bookType] !== undefined 
+      ? BOOK_TYPE_POINTS[bookType].toString() 
+      : book.point.toString();
     setFormData({
+      type: bookType,
+      language: book.language || '',
       name: book.name,
       price: book.price.toString(),
-      point: book.point.toString()
+      point: points
     });
   };
 
   const handleCancelEdit = () => {
     setEditingBook(null);
-    setFormData({ name: '', price: '', point: '' });
+    setFormData({ type: '', language: '', name: '', price: '', point: '' });
   };
 
   const handleUpdateBook = async (bookId) => {
     try {
+      // Get points from type mapping if type is set, otherwise use form value
+      const points = formData.type && BOOK_TYPE_POINTS[formData.type] !== undefined
+        ? BOOK_TYPE_POINTS[formData.type]
+        : parseFloat(formData.point);
+      
       const updateData = {
+        type: formData.type,
+        language: formData.language,
         name: formData.name,
         price: parseFloat(formData.price),
-        point: parseFloat(formData.point)
+        point: points
       };
 
       await api.put(`/books/${bookId}`, updateData);
@@ -140,6 +182,8 @@ const Admin = () => {
               <table className="admin-table">
                 <thead>
                   <tr>
+                    <th>Type</th>
+                    <th>Language</th>
                     <th>Book Name</th>
                     <th>Price (₹)</th>
                     <th>Points</th>
@@ -151,6 +195,40 @@ const Admin = () => {
                     <tr key={book._id}>
                       {editingBook === book._id ? (
                         <>
+                          <td>
+                            <select
+                              value={formData.type}
+                              onChange={(e) => {
+                                const selectedType = e.target.value;
+                                const points = selectedType && BOOK_TYPE_POINTS[selectedType] !== undefined
+                                  ? BOOK_TYPE_POINTS[selectedType].toString()
+                                  : formData.point;
+                                setFormData({ ...formData, type: selectedType, point: points });
+                              }}
+                              className="admin-input"
+                            >
+                              <option value="">-- Select Type --</option>
+                              {BOOK_TYPES.map(type => (
+                                <option key={type.value} value={type.value}>
+                                  {type.label}
+                                </option>
+                              ))}
+                            </select>
+                          </td>
+                          <td>
+                            <select
+                              value={formData.language}
+                              onChange={(e) => setFormData({ ...formData, language: e.target.value })}
+                              className="admin-input"
+                            >
+                              <option value="">-- Select Language --</option>
+                              {BOOK_LANGUAGES.map(lang => (
+                                <option key={lang.value} value={lang.value}>
+                                  {lang.label}
+                                </option>
+                              ))}
+                            </select>
+                          </td>
                           <td>
                             <input
                               type="text"
@@ -171,10 +249,11 @@ const Admin = () => {
                           <td>
                             <input
                               type="number"
-                              step="1"
+                              step="0.01"
                               value={formData.point}
-                              onChange={(e) => setFormData({ ...formData, point: e.target.value })}
+                              readOnly
                               className="admin-input"
+                              style={{ backgroundColor: '#f5f5f5', cursor: 'not-allowed' }}
                             />
                           </td>
                           <td>
@@ -194,6 +273,8 @@ const Admin = () => {
                         </>
                       ) : (
                         <>
+                          <td>{book.type || 'N/A'}</td>
+                          <td>{book.language || 'N/A'}</td>
                           <td>{book.name}</td>
                           <td>₹{book.price.toFixed(2)}</td>
                           <td>{book.point}</td>

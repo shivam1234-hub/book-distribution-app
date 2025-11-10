@@ -57,19 +57,19 @@ const CenterAnalytics = ({ center }) => {
       </div>
 
       <div className="book-analytics-section">
-        <h3>Book-wise Analytics</h3>
-        {analytics.bookAnalytics.length > 0 ? (
+        <h3>Type-wise Analytics</h3>
+        {analytics.typeAnalytics && analytics.typeAnalytics.length > 0 ? (
           <div className="book-analytics-table">
             <div className="table-header">
-              <div className="col-name">Book Name</div>
+              <div className="col-name">Book Type</div>
               <div className="col-count">Count</div>
-              <div className="col-price">Total Price</div>
+              <div className="col-price">Total Price (₹)</div>
               <div className="col-points">Total Points</div>
-              <div className="col-donation">Donation</div>
+              <div className="col-donation">Donation (₹)</div>
             </div>
-            {analytics.bookAnalytics.map((item, index) => (
+            {analytics.typeAnalytics.map((item, index) => (
               <div key={index} className="table-row">
-                <div className="col-name">{item.book.name}</div>
+                <div className="col-name">{item.type}</div>
                 <div className="col-count">{item.count}</div>
                 <div className="col-price">₹{item.totalPrice.toFixed(2)}</div>
                 <div className="col-points">{item.totalPoints}</div>

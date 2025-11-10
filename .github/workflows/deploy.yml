@@ -2,7 +2,9 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -14,11 +16,11 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
+  deploy:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -31,17 +33,15 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install dependencies
-        run: |
-          cd frontend
-          npm ci
+        working-directory: ./frontend
+        run: npm ci
 
-      - name: Build frontend
-        run: |
-          cd frontend
-          npm run build
+      - name: Build
+        working-directory: ./frontend
+        run: npm run build
         env:
-          REACT_APP_API_URL_VERCEL: ${{ secrets.REACT_APP_API_URL_VERCEL || 'https://book-distribution-app.vercel.app/api' }}
-          REACT_APP_API_URL_RENDER: ${{ secrets.REACT_APP_API_URL_RENDER || 'https://book-distribution-app.onrender.com/api' }}
+          REACT_APP_API_URL_VERCEL: ${{ secrets.REACT_APP_API_URL_VERCEL }}
+          REACT_APP_API_URL_RENDER: ${{ secrets.REACT_APP_API_URL_RENDER }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

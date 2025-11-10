@@ -8,25 +8,14 @@ import DailyAnalytics from './DailyAnalytics';
 
 const Dashboard = ({ user, center, onBack }) => {
   const [activeTab, setActiveTab] = useState('add');
-  const [books, setBooks] = useState([]);
   const [userData, setUserData] = useState(user);
   const [centerData, setCenterData] = useState(center);
 
   useEffect(() => {
-    fetchBooks();
     fetchUserData();
     fetchCenterData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const fetchBooks = async () => {
-    try {
-      const response = await api.get('/books');
-      setBooks(response.data);
-    } catch (error) {
-      console.error('Error fetching books:', error);
-    }
-  };
 
   const fetchUserData = async () => {
     try {
@@ -93,9 +82,8 @@ const Dashboard = ({ user, center, onBack }) => {
           {activeTab === 'add' && (
             <AddDistribution
               user={userData}
-              books={books}
               onDistributionAdded={handleDistributionAdded}
-              onBookAdded={fetchBooks}
+              onBookAdded={() => {}}
             />
           )}
           {activeTab === 'user' && (

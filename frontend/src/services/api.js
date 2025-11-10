@@ -12,7 +12,9 @@ if (isDevelopment) {
   const localBackendUrl = process.env.REACT_APP_API_URL_LOCAL || 'http://localhost:8083/api';
   BACKEND_URLS = [localBackendUrl];
 } else {
-  // Production - use deployed backends (both will be called in parallel)
+  // Production - use deployed backends
+  // GET requests: called in parallel (race for speed)
+  // Write requests (POST/PUT/DELETE): called sequentially (prevents duplicates)
   BACKEND_URLS = [
     process.env.REACT_APP_API_URL_VERCEL || 'https://book-distribution-app.vercel.app/api',
     process.env.REACT_APP_API_URL_RENDER || 'https://book-distribution-app.onrender.com/api'
@@ -22,6 +24,7 @@ if (isDevelopment) {
 /**
  * Makes parallel requests to both backends and returns the first successful response
  * Uses Promise.race for speed, but tracks all requests for fallback
+ * SAFE FOR READ-ONLY OPERATIONS (GET requests)
  * @param {Function} requestFn - Function that takes a baseURL and returns a promise
  * @returns {Promise} - The first successful response
  */
@@ -75,6 +78,33 @@ async function raceRequests(requestFn) {
 }
 
 /**
+ * Makes sequential requests to backends, trying one at a time
+ * SAFE FOR WRITE OPERATIONS (POST, PUT, DELETE) - prevents duplicate writes
+ * @param {Function} requestFn - Function that takes a baseURL and returns a promise
+ * @returns {Promise} - The first successful response
+ */
+async function sequentialRequests(requestFn) {
+  let lastError = null;
+  
+  // Try each backend sequentially - stop at first success
+  for (let index = 0; index < BACKEND_URLS.length; index++) {
+    const baseURL = BACKEND_URLS[index];
+    try {
+      const response = await requestFn(baseURL);
+      console.log(`✓ Backend ${index + 1} (${baseURL}) succeeded`);
+      return response;
+    } catch (error) {
+      lastError = error;
+      console.log(`✗ Backend ${index + 1} (${baseURL}) failed:`, error.message);
+      // Continue to next backend if this one failed
+    }
+  }
+  
+  // All backends failed
+  throw lastError || new Error('All backends failed');
+}
+
+/**
  * API service with parallel request support
  */
 const api = {
@@ -91,10 +121,10 @@ const api = {
   },
 
   /**
-   * POST request
+   * POST request - uses sequential requests to prevent duplicate writes
    */
   post: async (endpoint, data = {}, config = {}) => {
-    return raceRequests(baseURL => 
+    return sequentialRequests(baseURL => 
       axios.post(`${baseURL}${endpoint}`, data, {
         ...config,
         timeout: 10000
@@ -103,10 +133,10 @@ const api = {
   },
 
   /**
-   * PUT request
+   * PUT request - uses sequential requests to prevent duplicate writes
    */
   put: async (endpoint, data = {}, config = {}) => {
-    return raceRequests(baseURL => 
+    return sequentialRequests(baseURL => 
       axios.put(`${baseURL}${endpoint}`, data, {
         ...config,
         timeout: 10000
@@ -115,10 +145,10 @@ const api = {
   },
 
   /**
-   * DELETE request
+   * DELETE request - uses sequential requests to prevent duplicate writes
    */
   delete: async (endpoint, config = {}) => {
-    return raceRequests(baseURL => 
+    return sequentialRequests(baseURL => 
       axios.delete(`${baseURL}${endpoint}`, {
         ...config,
         timeout: 10000

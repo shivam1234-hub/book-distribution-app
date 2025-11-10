@@ -6,6 +6,17 @@ const bookSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
+  type: {
+    type: String,
+    required: true,
+    enum: ['MB', 'B', 'M', 'S', 'SB', 'CC'],
+    uppercase: true
+  },
+  language: {
+    type: String,
+    required: true,
+    enum: ['Hindi', 'English', 'Telugu', 'Kannada', 'Tamil', 'Bengali', 'Oriya', 'Marathi']
+  },
   point: {
     type: Number,
     required: true,

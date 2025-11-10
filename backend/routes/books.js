@@ -2,10 +2,17 @@ const express = require('express');
 const router = express.Router();
 const Book = require('../models/Book');
 
-// Get all books
+// Get all books (optionally filtered by type and/or language)
 router.get('/', async (req, res) => {
   try {
-    const books = await Book.find().sort({ name: 1 });
+    const query = {};
+    if (req.query.type) {
+      query.type = req.query.type.toUpperCase();
+    }
+    if (req.query.language) {
+      query.language = req.query.language;
+    }
+    const books = await Book.find(query).sort({ name: 1 });
     res.json(books);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -26,7 +33,7 @@ router.post('/', async (req, res) => {
 // Update a book
 router.put('/:id', async (req, res) => {
   try {
-    const { name, price, point } = req.body;
+    const { name, price, point, type, language } = req.body;
     const book = await Book.findById(req.params.id);
     
     if (!book) {
@@ -36,6 +43,8 @@ router.put('/:id', async (req, res) => {
     if (name !== undefined) book.name = name;
     if (price !== undefined) book.price = price;
     if (point !== undefined) book.point = point;
+    if (type !== undefined) book.type = type.toUpperCase();
+    if (language !== undefined) book.language = language;
 
     await book.save();
     res.json(book);

@@ -93,31 +93,30 @@ router.get('/:id/analytics', async (req, res) => {
     }
 
     const users = await User.find({ center: req.params.id }).populate('distributions.book');
-    const books = await Book.find();
     
-    // Calculate book-wise analytics
-    const bookAnalytics = {};
+    // Calculate type-wise analytics
+    const typeAnalytics = {};
     
     users.forEach(user => {
       user.distributions.forEach(dist => {
-        if (dist.book) {
-          const bookId = dist.book._id.toString();
-          if (!bookAnalytics[bookId]) {
-            bookAnalytics[bookId] = {
-              book: dist.book,
+        if (dist.book && dist.book.type) {
+          const bookType = dist.book.type;
+          if (!typeAnalytics[bookType]) {
+            typeAnalytics[bookType] = {
+              type: bookType,
               count: 0,
               totalPrice: 0,
               totalPoints: 0,
               totalDonation: 0
             };
           }
-          bookAnalytics[bookId].count += 1;
-          bookAnalytics[bookId].totalPrice += dist.pricePaid;
-          bookAnalytics[bookId].totalPoints += dist.book.point;
+          typeAnalytics[bookType].count += 1;
+          typeAnalytics[bookType].totalPrice += dist.pricePaid;
+          typeAnalytics[bookType].totalPoints += dist.book.point;
           
           const donation = dist.pricePaid - dist.book.price;
           if (donation > 0) {
-            bookAnalytics[bookId].totalDonation += donation;
+            typeAnalytics[bookType].totalDonation += donation;
           }
         }
       });
@@ -125,7 +124,7 @@ router.get('/:id/analytics', async (req, res) => {
 
     const analytics = {
       center,
-      bookAnalytics: Object.values(bookAnalytics),
+      typeAnalytics: Object.values(typeAnalytics),
       totalUsers: users.length
     };
 
@@ -166,7 +165,7 @@ router.get('/:id/daily-analytics', async (req, res) => {
     let totalPoints = 0;
     let totalDonation = 0;
     let totalLoss = 0;
-    const bookDistribution = {};
+    const typeDistribution = {};
     const userDistributionCount = {};
 
     users.forEach(user => {
@@ -175,16 +174,20 @@ router.get('/:id/daily-analytics', async (req, res) => {
       
       user.distributions.forEach(dist => {
         const distDate = new Date(dist.date);
-        if (distDate >= today && distDate < tomorrow && dist.book) {
-          // Count book distributions
-          const bookId = dist.book._id.toString();
-          if (!bookDistribution[bookId]) {
-            bookDistribution[bookId] = {
-              book: dist.book,
-              count: 0
+        if (distDate >= today && distDate < tomorrow && dist.book && dist.book.type) {
+          // Count type distributions
+          const bookType = dist.book.type;
+          if (!typeDistribution[bookType]) {
+            typeDistribution[bookType] = {
+              type: bookType,
+              count: 0,
+              totalPoints: 0,
+              totalPrice: 0
             };
           }
-          bookDistribution[bookId].count += 1;
+          typeDistribution[bookType].count += 1;
+          typeDistribution[bookType].totalPoints += dist.book.point;
+          typeDistribution[bookType].totalPrice += dist.pricePaid;
 
           // Calculate points, donation, and loss
           totalPoints += dist.book.point;
@@ -230,7 +233,7 @@ router.get('/:id/daily-analytics', async (req, res) => {
       totalPoints,
       totalDonation,
       totalLoss,
-      bookDistribution: Object.values(bookDistribution),
+      typeDistribution: Object.values(typeDistribution),
       topDevotees
     };
 

@@ -72,14 +72,18 @@ const DailyAnalytics = ({ center }) => {
       </div>
 
       <div className="book-distribution-section">
-        <h3>📚 Books Distributed Today</h3>
-        {analytics.bookDistribution.length > 0 ? (
-          <div className="book-distribution-list">
-            {analytics.bookDistribution.map((item, index) => (
-              <div key={index} className="book-distribution-item">
-                <div className="book-name">{item.book.name}</div>
-                <div className="book-count-badge">
-                  <span className="book-count-number">{item.count}</span>
+        <h3>📚 Books Distributed Today (Type-wise)</h3>
+        {analytics.typeDistribution && analytics.typeDistribution.length > 0 ? (
+          <div className="type-distribution-list">
+            {analytics.typeDistribution.map((item, index) => (
+              <div key={index} className="type-distribution-item">
+                <div className="type-info">
+                  <div className="type-name">{item.type}</div>
+                  <div className="type-details">
+                    <span className="type-detail-item">Count: <strong>{item.count}</strong></span>
+                    <span className="type-detail-item">Points: <strong>{item.totalPoints}</strong></span>
+                    <span className="type-detail-item">Price: <strong>₹{item.totalPrice.toFixed(2)}</strong></span>
+                  </div>
                 </div>
               </div>
             ))}
