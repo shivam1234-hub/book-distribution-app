@@ -49,39 +49,7 @@ router.get('/admin/all-analytics', async (req, res) => {
   }
 });
 
-// Get center by ID
-router.get('/:id', async (req, res) => {
-  try {
-    const center = await Center.findById(req.params.id);
-    if (!center) {
-      return res.status(404).json({ error: 'Center not found' });
-    }
-    res.json(center);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Update a center
-router.put('/:id', async (req, res) => {
-  try {
-    const { name } = req.body;
-    const center = await Center.findById(req.params.id);
-    
-    if (!center) {
-      return res.status(404).json({ error: 'Center not found' });
-    }
-
-    if (name !== undefined) center.name = name;
-
-    await center.save();
-    res.json(center);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
-
-// Get center analytics
+// Get center analytics (must be before /:id route)
 router.get('/:id/analytics', async (req, res) => {
   try {
     const User = require('../models/User');
@@ -134,7 +102,7 @@ router.get('/:id/analytics', async (req, res) => {
   }
 });
 
-// Get daily analytics for a center
+// Get daily analytics for a center (must be before /:id route)
 router.get('/:id/daily-analytics', async (req, res) => {
   try {
     const User = require('../models/User');
@@ -240,6 +208,38 @@ router.get('/:id/daily-analytics', async (req, res) => {
     res.json(analytics);
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+});
+
+// Get center by ID (must be after all specific routes)
+router.get('/:id', async (req, res) => {
+  try {
+    const center = await Center.findById(req.params.id);
+    if (!center) {
+      return res.status(404).json({ error: 'Center not found' });
+    }
+    res.json(center);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Update a center
+router.put('/:id', async (req, res) => {
+  try {
+    const { name } = req.body;
+    const center = await Center.findById(req.params.id);
+    
+    if (!center) {
+      return res.status(404).json({ error: 'Center not found' });
+    }
+
+    if (name !== undefined) center.name = name;
+
+    await center.save();
+    res.json(center);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
   }
 });
 
