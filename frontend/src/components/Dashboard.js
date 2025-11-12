@@ -5,6 +5,7 @@ import AddDistribution from './AddDistribution';
 import UserAnalytics from './UserAnalytics';
 import CenterAnalytics from './CenterAnalytics';
 import DailyAnalytics from './DailyAnalytics';
+import StockManagement from './StockManagement';
 
 const Dashboard = ({ user, center, onBack }) => {
   const [activeTab, setActiveTab] = useState('add');
@@ -76,6 +77,12 @@ const Dashboard = ({ user, center, onBack }) => {
           >
             📅 Daily Activity
           </button>
+          <button
+            className={`sidebar-tab ${activeTab === 'stock' ? 'active' : ''}`}
+            onClick={() => setActiveTab('stock')}
+          >
+            📦 Stock Management
+          </button>
         </div>
 
         <div className="main-content">
@@ -98,6 +105,11 @@ const Dashboard = ({ user, center, onBack }) => {
           )}
           {activeTab === 'daily' && (
             <DailyAnalytics
+              center={centerData}
+            />
+          )}
+          {activeTab === 'stock' && (
+            <StockManagement
               center={centerData}
             />
           )}
