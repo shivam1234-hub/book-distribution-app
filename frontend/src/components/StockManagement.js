@@ -30,13 +30,28 @@ const StockManagement = ({ center }) => {
   const [selectedLanguage, setSelectedLanguage] = useState('');
   const [selectedBook, setSelectedBook] = useState('');
   const [quantity, setQuantity] = useState('');
-  const [books, setBooks] = useState([]);
+  const [allBooks, setAllBooks] = useState([]); // Store all books locally
+  const [books, setBooks] = useState([]); // Filtered books based on type/language
   const [addingStock, setAddingStock] = useState(false);
 
   useEffect(() => {
     fetchStockData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [center]);
+
+  // Load all books once on component mount
+  useEffect(() => {
+    const fetchAllBooks = async () => {
+      try {
+        const response = await api.get('/books');
+        setAllBooks(response.data);
+      } catch (error) {
+        console.error('Error fetching all books:', error);
+        setAllBooks([]);
+      }
+    };
+    fetchAllBooks();
+  }, []);
 
   const fetchStockData = async () => {
     setLoading(true);
@@ -51,33 +66,19 @@ const StockManagement = ({ center }) => {
     }
   };
 
-  const fetchBooksByTypeAndLanguage = async () => {
-    try {
-      let url = '/books?';
-      if (selectedType) {
-        url += `type=${selectedType}`;
-      }
-      if (selectedLanguage) {
-        url += selectedType ? `&language=${selectedLanguage}` : `language=${selectedLanguage}`;
-      }
-      const response = await api.get(url);
-      setBooks(response.data);
-      setSelectedBook('');
-    } catch (error) {
-      console.error('Error fetching books:', error);
-      setBooks([]);
-    }
-  };
-
+  // Filter books locally based on selected type and language
   useEffect(() => {
     if (selectedType && selectedLanguage) {
-      fetchBooksByTypeAndLanguage();
+      const filtered = allBooks.filter(book => 
+        book.type === selectedType && book.language === selectedLanguage
+      );
+      setBooks(filtered);
+      setSelectedBook('');
     } else {
       setBooks([]);
       setSelectedBook('');
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedType, selectedLanguage]);
+  }, [selectedType, selectedLanguage, allBooks]);
 
   const handleAddStock = async (e) => {
     e.preventDefault();

@@ -72,19 +72,46 @@ const DailyAnalytics = ({ center }) => {
         </div>
       </div>
 
+      <div className="book-analytics-section">
+        <h3>📊 Type-wise Daily Distribution</h3>
+        {analytics.typeAnalytics && analytics.typeAnalytics.length > 0 ? (
+          <div className="book-analytics-table">
+            <div className="table-header">
+              <div className="col-name">Book Type</div>
+              <div className="col-count">Count</div>
+              <div className="col-price">Total Price (₹)</div>
+              <div className="col-points">Total Points</div>
+              <div className="col-donation">Donation (₹)</div>
+            </div>
+            {analytics.typeAnalytics.map((item, index) => (
+              <div key={index} className="table-row">
+                <div className="col-name">{item.type}</div>
+                <div className="col-count">{item.count}</div>
+                <div className="col-price">₹{item.totalPrice.toFixed(2)}</div>
+                <div className="col-points">{item.totalPoints}</div>
+                <div className="col-donation">₹{item.totalDonation.toFixed(2)}</div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="no-data">No books distributed today</div>
+        )}
+      </div>
+
       <div className="book-distribution-section">
-        <h3>📚 Books Distributed Today (Type-wise)</h3>
-        {analytics.typeDistribution && analytics.typeDistribution.length > 0 ? (
-          <div className="type-distribution-list">
-            {analytics.typeDistribution.map((item, index) => (
-              <div key={index} className="type-distribution-item">
-                <div className="type-info">
-                  <div className="type-name">{item.type} {item.language && <span className="language-badge">({item.language})</span>}</div>
-                  <div className="type-details">
-                    <span className="type-detail-item">Count: <strong>{item.count}</strong></span>
-                    <span className="type-detail-item">Points: <strong>{item.totalPoints}</strong></span>
-                    <span className="type-detail-item">Price: <strong>₹{item.totalPrice.toFixed(2)}</strong></span>
-                  </div>
+        <h3>📚 Book Distribution Details</h3>
+        {analytics.bookDistribution && analytics.bookDistribution.length > 0 ? (
+          <div className="book-list">
+            {analytics.bookDistribution.map((item, index) => (
+              <div key={index} className="book-item">
+                <div className="book-name">{item.book.name}</div>
+                <div className="book-meta">
+                  {item.book.language && <span className="book-language">Language: {item.book.language}</span>}
+                  <span className="book-type">Type: {item.book.type}</span>
+                </div>
+                <div className="book-stats">
+                  <div className="book-count">Count: <strong>{item.count}</strong></div>
+                  <div className="book-points">Points: <strong>{item.book.point * item.count}</strong></div>
                 </div>
               </div>
             ))}

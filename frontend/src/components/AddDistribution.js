@@ -38,40 +38,41 @@ const AddDistribution = ({ user, onDistributionAdded, onBookAdded }) => {
   const [pricePaid, setPricePaid] = useState('');
   const [loading, setLoading] = useState(false);
   const [showAddBook, setShowAddBook] = useState(false);
-  const [books, setBooks] = useState([]);
+  const [allBooks, setAllBooks] = useState([]); // Store all books locally
+  const [books, setBooks] = useState([]); // Filtered books based on type/language
   const [newBookType, setNewBookType] = useState('');
   const [newBookLanguage, setNewBookLanguage] = useState('');
   const [newBookName, setNewBookName] = useState('');
   const [newBookPoint, setNewBookPoint] = useState('');
   const [newBookPrice, setNewBookPrice] = useState('');
 
-  const fetchBooksByTypeAndLanguage = async () => {
-    try {
-      let url = '/books?';
-      if (selectedType) {
-        url += `type=${selectedType}`;
+  // Load all books once on component mount
+  useEffect(() => {
+    const fetchAllBooks = async () => {
+      try {
+        const response = await api.get('/books');
+        setAllBooks(response.data);
+      } catch (error) {
+        console.error('Error fetching all books:', error);
+        setAllBooks([]);
       }
-      if (selectedLanguage) {
-        url += selectedType ? `&language=${selectedLanguage}` : `language=${selectedLanguage}`;
-      }
-      const response = await api.get(url);
-      setBooks(response.data);
-      setSelectedBook(''); // Reset selected book when filters change
-    } catch (error) {
-      console.error('Error fetching books:', error);
-      setBooks([]);
-    }
-  };
+    };
+    fetchAllBooks();
+  }, []);
 
+  // Filter books locally based on selected type and language
   useEffect(() => {
     if (selectedType && selectedLanguage) {
-      fetchBooksByTypeAndLanguage();
+      const filtered = allBooks.filter(book => 
+        book.type === selectedType && book.language === selectedLanguage
+      );
+      setBooks(filtered);
+      setSelectedBook(''); // Reset selected book when filters change
     } else {
       setBooks([]);
       setSelectedBook('');
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedType, selectedLanguage]);
+  }, [selectedType, selectedLanguage, allBooks]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -137,9 +138,12 @@ const AddDistribution = ({ user, onDistributionAdded, onBookAdded }) => {
       setNewBookPrice('');
       setShowAddBook(false);
       alert('Book added successfully!');
-      // Refresh books for the current type and language
-      if (selectedType && selectedLanguage) {
-        await fetchBooksByTypeAndLanguage();
+      // Refresh all books to include the newly added book
+      try {
+        const response = await api.get('/books');
+        setAllBooks(response.data);
+      } catch (error) {
+        console.error('Error refreshing books:', error);
       }
       if (onBookAdded) {
         onBookAdded();

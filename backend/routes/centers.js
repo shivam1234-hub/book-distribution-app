@@ -148,7 +148,9 @@ router.get('/:id/daily-analytics', async (req, res) => {
     let totalPoints = 0;
     let totalDonation = 0;
     let totalLoss = 0;
-    const typeDistribution = {};
+    const typeDistribution = {}; // For type-language combinations (detailed view)
+    const typeAnalytics = {}; // For type-only aggregation (table view)
+    const bookDistribution = {}; // For book-wise distribution
     const userDistributionCount = {};
 
     users.forEach(user => {
@@ -158,7 +160,7 @@ router.get('/:id/daily-analytics', async (req, res) => {
       user.distributions.forEach(dist => {
         const distDate = new Date(dist.date);
         if (distDate >= today && distDate < tomorrow && dist.book && dist.book.type) {
-          // Count type and language distributions
+          // Count type and language distributions (detailed)
           const bookType = dist.book.type;
           const bookLanguage = dist.book.language || 'Unknown';
           const key = `${bookType}-${bookLanguage}`;
@@ -176,15 +178,42 @@ router.get('/:id/daily-analytics', async (req, res) => {
           typeDistribution[key].totalPoints += dist.book.point;
           typeDistribution[key].totalPrice += dist.pricePaid;
 
+          // Aggregate by type only (for table view)
+          if (!typeAnalytics[bookType]) {
+            typeAnalytics[bookType] = {
+              type: bookType,
+              count: 0,
+              totalPrice: 0,
+              totalPoints: 0,
+              totalDonation: 0
+            };
+          }
+          typeAnalytics[bookType].count += 1;
+          typeAnalytics[bookType].totalPrice += dist.pricePaid;
+          typeAnalytics[bookType].totalPoints += dist.book.point;
+          
+          const donation = dist.pricePaid > dist.book.price ? dist.pricePaid - dist.book.price : 0;
+          if (donation > 0) {
+            typeAnalytics[bookType].totalDonation += donation;
+          }
+
+          // Track book-wise distribution
+          const bookId = dist.book._id.toString();
+          if (!bookDistribution[bookId]) {
+            bookDistribution[bookId] = {
+              book: dist.book,
+              count: 0
+            };
+          }
+          bookDistribution[bookId].count += 1;
+
           // Calculate points, donation, and loss
           totalPoints += dist.book.point;
           userPoints += dist.book.point;
           userDistributions += 1;
-
-          const donation = dist.pricePaid > dist.book.price ? dist.pricePaid - dist.book.price : 0;
-          const loss = dist.pricePaid < dist.book.price ? dist.book.price - dist.pricePaid : 0;
           
           totalDonation += donation;
+          const loss = dist.pricePaid < dist.book.price ? dist.book.price - dist.pricePaid : 0;
           totalLoss += loss;
         }
       });
@@ -220,7 +249,9 @@ router.get('/:id/daily-analytics', async (req, res) => {
       totalPoints,
       totalDonation,
       totalLoss,
-      typeDistribution: Object.values(typeDistribution),
+      typeAnalytics: Object.values(typeAnalytics), // Type-wise aggregation for table
+      typeDistribution: Object.values(typeDistribution), // Type-language combinations (detailed)
+      bookDistribution: Object.values(bookDistribution), // Book-wise distribution
       topDevotees
     };
 
