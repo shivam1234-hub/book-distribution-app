@@ -8,6 +8,7 @@ const UserAnalytics = ({ user }) => {
 
   useEffect(() => {
     fetchAnalytics();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user._id]);
 
   const fetchAnalytics = async () => {
@@ -63,8 +64,14 @@ const UserAnalytics = ({ user }) => {
             {analytics.bookDistribution.map((item, index) => (
               <div key={index} className="book-item">
                 <div className="book-name">{item.book.name}</div>
-                <div className="book-count">Count: {item.count}</div>
-                <div className="book-points">Points: {item.book.point * item.count}</div>
+                <div className="book-meta">
+                  {item.book.language && <span className="book-language">Language: {item.book.language}</span>}
+                  <span className="book-type">Type: {item.book.type}</span>
+                </div>
+                <div className="book-stats">
+                  <div className="book-count">Count: {item.count}</div>
+                  <div className="book-points">Points: {item.book.point * item.count}</div>
+                </div>
               </div>
             ))}
           </div>

@@ -18,6 +18,7 @@ const HomePage = ({ centers, onCenterSelect, onUserSelect, selectedCenter, onCen
       setUsers([]);
       setSearchQuery('');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCenter, searchQuery]);
 
   const fetchUsers = async () => {
@@ -47,7 +48,7 @@ const HomePage = ({ centers, onCenterSelect, onUserSelect, selectedCenter, onCen
     }
 
     try {
-      const response = await api.post('/users', {
+      await api.post('/users', {
         name: newUserName.trim(),
         number: newUserNumber.trim(),
         centerId: selectedCenter._id

@@ -66,6 +66,9 @@ router.get('/:id/analytics', async (req, res) => {
     // Calculate type-wise analytics
     const typeAnalytics = {};
     
+    // Calculate book-wise distribution
+    const bookDistribution = {};
+    
     users.forEach(user => {
       user.distributions.forEach(dist => {
         if (dist.book && dist.book.type) {
@@ -87,6 +90,16 @@ router.get('/:id/analytics', async (req, res) => {
           if (donation > 0) {
             typeAnalytics[bookType].totalDonation += donation;
           }
+          
+          // Track book-wise distribution
+          const bookId = dist.book._id.toString();
+          if (!bookDistribution[bookId]) {
+            bookDistribution[bookId] = {
+              book: dist.book,
+              count: 0
+            };
+          }
+          bookDistribution[bookId].count += 1;
         }
       });
     });
@@ -94,6 +107,7 @@ router.get('/:id/analytics', async (req, res) => {
     const analytics = {
       center,
       typeAnalytics: Object.values(typeAnalytics),
+      bookDistribution: Object.values(bookDistribution),
       totalUsers: users.length
     };
 
@@ -144,19 +158,23 @@ router.get('/:id/daily-analytics', async (req, res) => {
       user.distributions.forEach(dist => {
         const distDate = new Date(dist.date);
         if (distDate >= today && distDate < tomorrow && dist.book && dist.book.type) {
-          // Count type distributions
+          // Count type and language distributions
           const bookType = dist.book.type;
-          if (!typeDistribution[bookType]) {
-            typeDistribution[bookType] = {
+          const bookLanguage = dist.book.language || 'Unknown';
+          const key = `${bookType}-${bookLanguage}`;
+          
+          if (!typeDistribution[key]) {
+            typeDistribution[key] = {
               type: bookType,
+              language: bookLanguage,
               count: 0,
               totalPoints: 0,
               totalPrice: 0
             };
           }
-          typeDistribution[bookType].count += 1;
-          typeDistribution[bookType].totalPoints += dist.book.point;
-          typeDistribution[bookType].totalPrice += dist.pricePaid;
+          typeDistribution[key].count += 1;
+          typeDistribution[key].totalPoints += dist.book.point;
+          typeDistribution[key].totalPrice += dist.pricePaid;
 
           // Calculate points, donation, and loss
           totalPoints += dist.book.point;

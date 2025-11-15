@@ -8,6 +8,7 @@ const DailyAnalytics = ({ center }) => {
 
   useEffect(() => {
     fetchAnalytics();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [center._id]);
 
   const fetchAnalytics = async () => {
@@ -78,7 +79,7 @@ const DailyAnalytics = ({ center }) => {
             {analytics.typeDistribution.map((item, index) => (
               <div key={index} className="type-distribution-item">
                 <div className="type-info">
-                  <div className="type-name">{item.type}</div>
+                  <div className="type-name">{item.type} {item.language && <span className="language-badge">({item.language})</span>}</div>
                   <div className="type-details">
                     <span className="type-detail-item">Count: <strong>{item.count}</strong></span>
                     <span className="type-detail-item">Points: <strong>{item.totalPoints}</strong></span>
